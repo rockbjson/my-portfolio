@@ -370,13 +370,8 @@ export default function App() {
                 <ul style={{ margin: 0, paddingLeft: 18 }}>
                   {/* Resume opens directly in a new tab (inline PDF) */}
                   <li>
-                    <a
-                      href={new URL(`${import.meta.env.BASE_URL}Resume.pdf`, window.location.origin)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Resume (PDF)
-                    </a>
+                    <a href="/Resume.pdf" target="_blank" rel="noreferrer">Resume (PDF)</a>
+
                   </li>
                   <li><a href="https://github.com/rockbjson" target="_blank" rel="noreferrer">GitHub</a></li>
                   <li><a href="https://www.linkedin.com/in/tanisi-das" target="_blank" rel="noreferrer">LinkedIn</a></li>
