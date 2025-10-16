@@ -508,10 +508,6 @@ function Experience() {
           <li>Designed an application to conduct sentiment analysis on extracted reviews using Python, an NLP model and Excel to provide insights into customer satisfaction data</li>
         </ul>
       </div>
-      <div className="item card">
-        <strong>Research Assistant (HCI)</strong><br />
-        Usability studies, data analysis, prototyping.
-      </div>
     </div>
   );
 }
