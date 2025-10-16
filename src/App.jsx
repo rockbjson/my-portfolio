@@ -380,7 +380,7 @@ export default function App() {
                       type="button"
                       className="link-btn"
                       onClick={() => {
-                        navigator.clipboard?.writeText("you@example.com");
+                        navigator.clipboard?.writeText("tanisidas.21@gmail.com");
                         popToast("Email copied!");
                       }}
                       aria-label="Copy email address"
