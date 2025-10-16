@@ -181,7 +181,7 @@ export default function App() {
 
   // Open resume PDF in a new tab/window (browser displays inline)
   const openResume = useCallback(() => {
-    window.open("/Resume.pdf", "_blank", "noopener,noreferrer");
+    window.open("/resume.pdf", "_blank", "noopener,noreferrer");
   }, []);
 
   // keep URL hash synced with active tab
@@ -370,7 +370,7 @@ export default function App() {
                 <ul style={{ margin: 0, paddingLeft: 18 }}>
                   {/* Resume opens directly in a new tab (inline PDF) */}
                   <li>
-                    <a href="/Resume.pdf" target="_blank" rel="noreferrer">Resume (PDF)</a>
+                    <a href="/resume.pdf" target="_blank" rel="noreferrer">Resume (PDF)</a>
 
                   </li>
                   <li><a href="https://github.com/rockbjson" target="_blank" rel="noreferrer">GitHub</a></li>
