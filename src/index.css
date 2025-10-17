@@ -6,6 +6,7 @@
    - Tile hover lift + scroll-reveal
    - Avatar bob on hover
    - Respects prefers-reduced-motion
+   - Arrow button refined (smaller, no circle)
    =========================== */
 
 /* -------- Tokens (UNCHANGED COLORS) -------- */
@@ -190,7 +191,10 @@ a:hover{ text-decoration: underline; }
 }
 
 /* control cards */
-.control.card{ overflow: hidden; }
+.control.card{
+  position: relative; 
+  overflow: hidden; 
+}
 .control .titlebar{
   background: var(--bar-yellow);
   padding: 10px 12px;
@@ -301,6 +305,30 @@ a:hover{ text-decoration: underline; }
   font-size: 0.9rem;
 }
 .tile.clickable{ cursor: pointer; }
+
+/* SMALL arrow only (no circle) */
+.arrow-btn{
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  width: auto;
+  height: auto;
+  cursor: pointer;
+}
+.arrow-btn svg{
+  width: 18px;
+  height: 18px;
+  display: block;
+  color: var(--ink);
+  opacity: .9;
+  transition: transform var(--dur-fast) var(--e-out), opacity var(--dur-fast) var(--e-out);
+}
+.tile:hover .arrow-btn svg{ transform: translateX(2px); opacity: 1; }
+.arrow-btn:active svg{ transform: translateX(0) scale(.98); }
 
 /* tile hover lift */
 .tile-anim{
@@ -548,6 +576,23 @@ a:hover{ text-decoration: underline; }
 }
 .btn:hover{ transform: translateY(-1px) }
 .btn:active{ transform: translateY(0) scale(.98) }
+
+/* Small message modal for control cards */
+.modal-window.small-message {
+  width: 320px;
+  background: var(--paper);
+  border-radius: var(--r-lg);
+  border: var(--stroke);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  animation: popIn .25s var(--e-out);
+}
+
+.modal-window.small-message .modal-body {
+  padding: 14px 18px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 
 /* -------- Responsive -------- */
 @media (max-width: 1180px){

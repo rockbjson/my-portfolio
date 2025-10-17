@@ -5,14 +5,12 @@ function Icon({ name }) {
   let svg = null;
 
   if (name === "projects") {
-    // Folder
     svg = (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M3.5 7h6l1.5 2H20a1.5 1.5 0 0 1 1.5 1.5V18A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18V8.5A1.5 1.5 0 0 1 4 7h-.5z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
     );
   } else if (name === "education") {
-    // Graduation cap
     svg = (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M3 10l9-4 9 4-9 4-9-4z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
@@ -21,7 +19,6 @@ function Icon({ name }) {
       </svg>
     );
   } else if (name === "experience") {
-    // Briefcase
     svg = (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <rect x="3" y="7" width="18" height="12" rx="2" ry="2" fill="none" stroke="currentColor" strokeWidth="2"/>
@@ -30,7 +27,6 @@ function Icon({ name }) {
       </svg>
     );
   } else {
-    // Sparkles / other
     svg = (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 3l1.8 3.8L18 8.6l-3.7 1.9L12 14l-1.9-3.5L6.4 8.6l4.2-1.8L12 3z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
@@ -54,7 +50,6 @@ function Splash({ onReady }) {
     let done = false;
     const minMs = 900;
     const start = performance.now();
-
     const tick = () => setPct(p => Math.min(p + Math.random() * 12, 100));
     const interval = setInterval(tick, 140);
 
@@ -101,30 +96,23 @@ function Splash({ onReady }) {
   );
 }
 
-/* ===== Toast (copy feedback) ===== */
+/* ===== Toast ===== */
 function Toast({ message, show }) {
-  return (
-    <div className={`toast ${show ? "show" : ""}`} role="status" aria-live="polite">
-      {message}
-    </div>
-  );
+  return <div className={`toast ${show ? "show" : ""}`} role="status" aria-live="polite">{message}</div>;
 }
 
 /* ===== Project Modal ===== */
 function ProjectModal({ open, project, onClose }) {
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    const onKey = e => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
   if (!open) return null;
-
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true" aria-label={`${project.title} details`} onClick={(e) => {
-      if (e.target === e.currentTarget) onClose();
-    }}>
+    <div className="modal-overlay" role="dialog" aria-modal="true" aria-label={`${project.title} details`} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="modal-window" role="document">
         <div className="modal-titlebar">
           <span>{project.title}</span>
@@ -133,7 +121,6 @@ function ProjectModal({ open, project, onClose }) {
         <div className="modal-body">
           <p className="modal-sub">{project.subtitle}</p>
           <p>{project.description}</p>
-
           {project.tech?.length > 0 && (
             <>
               <strong>Tech</strong>
@@ -142,7 +129,6 @@ function ProjectModal({ open, project, onClose }) {
               </div>
             </>
           )}
-
           {(project.links?.demo || project.links?.code) && (
             <div className="modal-actions">
               {project.links.demo && <a className="btn" href={project.links.demo} target="_blank" rel="noreferrer">Live Demo</a>}
@@ -155,33 +141,62 @@ function ProjectModal({ open, project, onClose }) {
   );
 }
 
+/* ===== Control Message Modal ===== */
+function ControlModal({ control, onClose }) {
+  useEffect(() => {
+    if (!control) return;
+    const onKey = e => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [control, onClose]);
+
+  if (!control) return null;
+
+  const messages = {
+    "Languages": "These are the programming languages I’m most fluent in — the backbone of all my software projects.",
+    "Web & Databases": "Core web technologies and database tools I use to build full-stack applications.",
+    "Frameworks & Tools": "Development frameworks and utilities that streamline my workflow and design process.",
+    "DevOps": "Cloud and deployment tools that support scalability, automation, and version control."
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      {/* Use the default larger modal window (same size as project modal) */}
+      <div className="modal-window" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+        <div className="modal-titlebar">
+          <span>{control}</span>
+          <button type="button" className="modal-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="modal-body">
+          <p>{messages[control] || "This section showcases my technical expertise."}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [booted, setBooted] = useState(false);
-
-  // Deep-link tab support (reads hash on first load)
-  const initialTab = (()=> {
-    const h = window.location.hash.replace("#","");
-    return ["projects","education","experience","other"].includes(h) ? h : "projects";
+  const initialTab = (() => {
+    const h = window.location.hash.replace("#", "");
+    return ["projects", "education", "experience", "other"].includes(h) ? h : "projects";
   })();
-
   const [active, setActive] = useState(initialTab);
   const [loadingTab, setLoadingTab] = useState(false);
 
-  // Modal state
+  // Project modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+
+  // Control modal state
+  const [activeControl, setActiveControl] = useState(null);
 
   // toast state
   const [toast, setToast] = useState({ show: false, message: "" });
   const popToast = useCallback((msg) => {
     setToast({ show: true, message: msg });
-    window.clearTimeout((popToast)._t);
-    (popToast)._t = window.setTimeout(() => setToast({ show: false, message: "" }), 1200);
-  }, []);
-
-  // Open resume PDF in a new tab/window (browser displays inline)
-  const openResume = useCallback(() => {
-    window.open("/resume.pdf", "_blank", "noopener,noreferrer");
+    window.clearTimeout(popToast._t);
+    popToast._t = window.setTimeout(() => setToast({ show: false, message: "" }), 1200);
   }, []);
 
   // keep URL hash synced with active tab
@@ -275,44 +290,74 @@ export default function App() {
             Hi! I'm a 4th year Computer Science Honours Student @ Carleton University exploring the intersection of HCI, AI &amp; software engineering to create intuitive &amp; user-focused digital experiences.
           </div>
 
-          <div className="control card">
-            <div className="titlebar">Languages</div>
-            <div className="body">
-              <button type="button" className="pill">Python</button>
-              <button type="button" className="pill">Java</button>
-              <button type="button" className="pill">C</button>
-              <button type="button" className="pill">C++</button>
-              <button type="button" className="pill">Javascript</button>
-            </div>
-          </div>
+          {[
+            "Languages",
+            "Web & Databases",
+            "Frameworks & Tools",
+            "DevOps"
+          ].map((section) => (
+            <div
+              key={section}
+              className="control card"
+            >
+              <div className="titlebar">{section}</div>
+              <div className="body">
+                {section === "Languages" && (
+                  <>
+                    <button type="button" className="pill">Python</button>
+                    <button type="button" className="pill">Java</button>
+                    <button type="button" className="pill">C</button>
+                    <button type="button" className="pill">C++</button>
+                    <button type="button" className="pill">Javascript</button>
+                  </>
+                )}
+                {section === "Web & Databases" && (
+                  <>
+                    <button type="button" className="pill brown">HTML</button>
+                    <button type="button" className="pill brown">CSS</button>
+                    <button type="button" className="pill brown">JavaScript</button>
+                    <button type="button" className="pill brown">SQL</button>
+                    <button type="button" className="pill brown">PostgreSQL</button>
+                  </>
+                )}
+                {section === "Frameworks & Tools" && (
+                  <>
+                    <button type="button" className="pill">Qt</button>
+                    <button type="button" className="pill">Spring Boot</button>
+                    <button type="button" className="pill">Node.js</button>
+                    <button type="button" className="pill">React</button>
+                    <button type="button" className="pill">Power BI</button>
+                    <button type="button" className="pill">UiPath</button>
+                  </>
+                )}
+                {section === "DevOps" && (
+                  <>
+                    <button type="button" className="pill brown">AWS (S3, Lambda)</button>
+                    <button type="button" className="pill brown">Git</button>
+                  </>
+                )}
+              </div>
 
-          <div className="control card">
-            <div className="titlebar">Web &amp; Databases</div>
-            <div className="body">
-              <button type="button" className="pill brown">HTML</button>
-              <button type="button" className="pill brown">CSS</button>
-              <button type="button" className="pill brown">Node.js</button>
-              <button type="button" className="pill brown">MongoDB</button>
-              <button type="button" className="pill brown">PostgreSQL</button>
+              {/* Arrow button is the ONLY trigger for the control modal */}
+              <button
+                type="button"
+                className="arrow-btn"
+                aria-label={`Open ${section} details`}
+                onClick={(e) => { e.stopPropagation(); setActiveControl(section); }}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M8 5l8 7-8 7"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
             </div>
-          </div>
-
-          <div className="control card">
-            <div className="titlebar">Frameworks &amp; Tools</div>
-            <div className="body">
-              <button type="button" className="pill">Qt</button>
-              <button type="button" className="pill">UiPath</button>
-              <button type="button" className="pill">PowerBI</button>
-            </div>
-          </div>
-
-          <div className="control card">
-            <div className="titlebar">DevOps</div>
-            <div className="body">
-              <button type="button" className="pill brown">AWS (S3, Lambda)</button>
-              <button type="button" className="pill brown">Git</button>
-            </div>
-          </div>
+          ))}
         </aside>
 
         {/* ===== JOINED WINDOW (board + rail) ===== */}
@@ -357,7 +402,7 @@ export default function App() {
                   >
                     <Icon name={k} />
                     <span>
-                      {label} <kbd className="key-hint">{["1","2","3","4"][i]}</kbd>
+                      {label} 
                     </span>
                   </button>
                 ))}
@@ -397,12 +442,13 @@ export default function App() {
         </div>
       </div>
 
-      {/* Modal lives at root so it overlays everything */}
+      {/* Modals at root so they overlay everything */}
       <ProjectModal
         open={modalOpen}
         project={selectedProject || { title: "", subtitle: "", description: "", tech: [], links: {} }}
         onClose={() => setModalOpen(false)}
       />
+      <ControlModal control={activeControl} onClose={() => setActiveControl(null)} />
     </>
   );
 }
@@ -437,7 +483,7 @@ function Projects({ projects, onOpen }) {
       <div className="tiles">
         {projects.map((p, i) => (
           <article
-            className="tile clickable"
+            className="tile clickable tile-anim"
             key={i}
             tabIndex={0}
             aria-label={`${p.title} — open details`}
@@ -449,6 +495,25 @@ function Projects({ projects, onOpen }) {
               <strong>{p.title}</strong>
               <span className="tile-sub">{p.subtitle}</span>
             </div>
+
+            {/* Small, discrete arrow button (uses existing CSS .arrow-btn) */}
+            <button
+              type="button"
+              className="arrow-btn"
+              aria-label="Open project details"
+              onClick={(e) => { e.stopPropagation(); onOpen(p); }}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M8 5l8 7-8 7"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
           </article>
         ))}
       </div>
