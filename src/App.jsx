@@ -153,11 +153,21 @@ function ControlModal({ control, onClose }) {
   if (!control) return null;
 
   const messages = {
-    "Languages": "These are the programming languages I’m most fluent in — the backbone of all my software projects.",
-    "Web & Databases": "Core web technologies and database tools I use to build full-stack applications.",
-    "Frameworks & Tools": "Development frameworks and utilities that streamline my workflow and design process.",
-    "DevOps": "Cloud and deployment tools that support scalability, automation, and version control."
+    "Languages": "",
+    "Web & Databases": "",
+    "Frameworks & Tools": "",
+    "DevOps": ""
   };
+
+  // Pills content to mirror the widgets
+  const pillsBySection = {
+    "Languages": { items: ["Python","Java","C","C++","Javascript","Go","Haskell","Bash","Powershell"], brown: false },
+    "Web & Databases": { items: ["HTML","CSS","Tailwind CSS","Bootstrap","REST APIs","MongoDB","PostgreSQL"], brown: true },
+    "Frameworks & Tools": { items: ["Qt","Spring Boot","Node.js","React.js","Vite","Power BI","UiPath"], brown: false },
+    "DevOps": { items: ["AWS (S3, Lambda)","Git/GitHub"], brown: true }
+  };
+
+  const data = pillsBySection[control] || { items: [], brown: false };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -168,7 +178,19 @@ function ControlModal({ control, onClose }) {
           <button type="button" className="modal-close" onClick={onClose}>✕</button>
         </div>
         <div className="modal-body">
-          <p>{messages[control] || "This section showcases my technical expertise."}</p>
+
+          {/* Added pills below the message, matching each widget's style */}
+          <div style={{ marginTop: 6 }}>
+            {data.items.map((t) => (
+              <span
+                key={t}
+                className={`pill${data.brown ? " brown" : ""}`}
+                style={{ marginBottom: 8 }}
+              >
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -209,7 +231,7 @@ export default function App() {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLButtonElement) return;
       if (e.key >= "1" && e.key <= "4") {
         const idx = Number(e.key) - 1;
-        if (map[idx]) handleTab(map[idx]);
+               if (map[idx]) handleTab(map[idx]);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -264,7 +286,7 @@ export default function App() {
       title: "Personal Portfolio Website", 
       subtitle: "You're looking at it!", 
       description: "Built a responsive portfolio website with retro-style UI, smooth animations, and clear project showcases—highlighting both technical and design skills.", 
-      tech: ["HTML", "CSS", "JavaScript", "React", "Tailwind CSS"], 
+      tech: ["React.js", "Vite", "JavaScript", "HTML", "Tailwind CSS", "Node.js", "Git", "AWS S3/Route 53/Amplify"], 
       links: { code: "https://github.com/rockbjson" } },
   ];
 
@@ -308,7 +330,6 @@ export default function App() {
                     <button type="button" className="pill">Java</button>
                     <button type="button" className="pill">C</button>
                     <button type="button" className="pill">C++</button>
-                    <button type="button" className="pill">Javascript</button>
                   </>
                 )}
                 {section === "Web & Databases" && (
@@ -415,7 +436,7 @@ export default function App() {
                 <ul style={{ margin: 0, paddingLeft: 18 }}>
                   {/* Resume opens directly in a new tab (inline PDF) */}
                   <li>
-                    <a href="/resume.pdf" target="_blank" rel="noreferrer">Resume (PDF)</a>
+                    <a href="/resume.pdf" target="_blank" rel="noreferrer">Resume</a>
 
                   </li>
                   <li><a href="https://github.com/rockbjson" target="_blank" rel="noreferrer">GitHub</a></li>
@@ -430,7 +451,7 @@ export default function App() {
                       }}
                       aria-label="Copy email address"
                     >
-                      Copy Email
+                      Email
                     </button>
                   </li>
                 </ul>
