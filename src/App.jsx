@@ -440,7 +440,7 @@ export default function App() {
             "Languages",
             "Web & Databases",
             "Frameworks & Tools",
-            "DevOps"
+            "Developer Tools"
           ].map((section) => (
             <div
               key={section}
@@ -471,11 +471,10 @@ export default function App() {
                     <button type="button" className="pill">Spring Boot</button>
                     <button type="button" className="pill">Node.js</button>
                     <button type="button" className="pill">React</button>
-                    <button type="button" className="pill">Power BI</button>
-                    <button type="button" className="pill">UiPath</button>
+
                   </>
                 )}
-                {section === "DevOps" && (
+                {section === "Developer Tools" && (
                   <>
                     <button type="button" className="pill brown">AWS (S3, Lambda)</button>
                     <button type="button" className="pill brown">Git</button>
