@@ -411,7 +411,7 @@ export default function App() {
       subtitle: "You're looking at it!", 
       description: "Built a responsive portfolio website with retro-style UI, smooth animations, and clear project showcases—highlighting both technical and design skills.", 
       tech: ["React.js", "Vite", "JavaScript", "HTML", "Tailwind CSS", "Node.js", "Git", "AWS S3/Route 53/Amplify"], 
-      links: { code: "https://github.com/rockbjson" } },
+      links: { code: "https://github.com/rockbjson/my-portfolio" } },
   ];
 
   if (!booted) return <Splash onReady={() => setBooted(true)} />;
