@@ -373,7 +373,7 @@ export default function App() {
       subtitle: "Real-time drone-swarm firefighting simulator & scheduler",
       description: "Built a three-subsystem simulation (Fire Incident → Scheduler → Drones) communicating over UDP, with drone state machines, fault injection/handling, and periodic event logging + post-run metrics.",
       tech: ["Java", "JUnit5"],
-      links: { code: "https://github.com/DiegoNin2/SYSC3303-A1-4-Project/tree/main/L1G4_Project"},
+      links: { code: "https://github.com/rockbjson/Drone-Firefighting-System"},
     },
     {
       title: "Health and Fitness Center Management System",
