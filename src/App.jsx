@@ -102,33 +102,75 @@ function Toast({ message, show }) {
 }
 
 /* ===== Project Modal ===== */
+/* ===== Project Modal (gallery under description) ===== */
+/* ===== Project Modal (gallery + click-to-zoom lightbox) ===== */
 function ProjectModal({ open, project, onClose }) {
+  const [lightboxIdx, setLightboxIdx] = useState(null); // null = closed
+
   useEffect(() => {
     if (!open) return;
-    const onKey = e => { if (e.key === "Escape") onClose(); };
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        if (lightboxIdx !== null) setLightboxIdx(null);
+        else onClose();
+      } else if (lightboxIdx !== null && project.images?.length) {
+        if (e.key === "ArrowRight") setLightboxIdx((i) => (i + 1) % project.images.length);
+        if (e.key === "ArrowLeft")  setLightboxIdx((i) => (i - 1 + project.images.length) % project.images.length);
+      }
+    };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  }, [open, lightboxIdx, onClose, project.images]);
 
   if (!open) return null;
+
+  const hasGallery = Array.isArray(project.images) && project.images.length > 0;
+
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true" aria-label={`${project.title} details`} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+    <div
+      className="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${project.title} details`}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
       <div className="modal-window" role="document">
         <div className="modal-titlebar">
           <span>{project.title}</span>
           <button type="button" className="modal-close" aria-label="Close" onClick={onClose}>✕</button>
         </div>
+
         <div className="modal-body">
           <p className="modal-sub">{project.subtitle}</p>
           <p>{project.description}</p>
+
+          {/* ---- GALLERY (click to open lightbox) ---- */}
+          {hasGallery && (
+            <div className="modal-gallery" aria-label="Project screenshots">
+              {project.images.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt={`${project.title} screenshot ${i + 1}`}
+                  loading="lazy"
+                  className="modal-thumb"
+                  onClick={() => setLightboxIdx(i)}
+                />
+              ))}
+            </div>
+          )}
+
           {project.tech?.length > 0 && (
             <>
               <strong>Tech</strong>
               <div style={{ marginTop: 8 }}>
-                {project.tech.map((t, i) => <span key={i} className="pill" style={{ marginBottom: 8 }}>{t}</span>)}
+                {project.tech.map((t, i) => (
+                  <span key={i} className="pill" style={{ marginBottom: 8 }}>{t}</span>
+                ))}
               </div>
             </>
           )}
+
           {(project.links?.demo || project.links?.code) && (
             <div className="modal-actions">
               {project.links.demo && <a className="btn" href={project.links.demo} target="_blank" rel="noreferrer">Live Demo</a>}
@@ -137,9 +179,70 @@ function ProjectModal({ open, project, onClose }) {
           )}
         </div>
       </div>
+
+      {/* ===== LIGHTBOX OVERLAY ===== */}
+      {lightboxIdx !== null && hasGallery && (
+        <div
+          className="lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image preview"
+          onClick={(e) => { if (e.target === e.currentTarget) setLightboxIdx(null); }}
+        >
+          <figure className="lightbox-figure">
+            <img
+              src={project.images[lightboxIdx]}
+              alt={`${project.title} full-size screenshot ${lightboxIdx + 1}`}
+              className="lightbox-img"
+              onClick={() => setLightboxIdx(null)}
+            />
+            <figcaption className="lightbox-cap">
+              {lightboxIdx + 1} / {project.images.length}
+            </figcaption>
+          </figure>
+
+          {/* Prev / Next controls (only if >1 image) */}
+          {project.images.length > 1 && (
+            <>
+              <button
+                type="button"
+                className="lightbox-nav lightbox-prev"
+                aria-label="Previous image"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIdx((i) => (i - 1 + project.images.length) % project.images.length);
+                }}
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                className="lightbox-nav lightbox-next"
+                aria-label="Next image"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIdx((i) => (i + 1) % project.images.length);
+                }}
+              >
+                ›
+              </button>
+            </>
+          )}
+
+          <button
+            type="button"
+            className="lightbox-close"
+            aria-label="Close image preview"
+            onClick={() => setLightboxIdx(null)}
+          >
+            ✕
+          </button>
+        </div>
+      )}
     </div>
   );
 }
+
 
 /* ===== Control Message Modal ===== */
 function ControlModal({ control, onClose }) {
@@ -255,6 +358,17 @@ export default function App() {
   // sample project data (replace with your real projects)
   const projects = [
     {
+      title: "Eunoia",
+      subtitle: "An emotion-aware study timer for mindful productivity",
+      description: "A calm productivity tool that adapts to the user’s mood. Eunoia uses facial-expression recognition or manual mood selection to recommend session types, sounds, and motivation while visualizing focus and mood trends over time.",
+      tech: ["HTML", "CSS", "JavaScript", "Face-API.js", "AWS Amplify", "Canva"],
+      links: { code: "https://github.com/rockbjson/study-planner", demo: "https://main.d3a0r8yt7o6u1m.amplifyapp.com"},
+      images: [
+        "/assets/projects/eunoia-1.png",
+        "/assets/projects/eunoia-2.png",
+      ]
+    },
+    {
       title: "Distributed Fire Response System",
       subtitle: "Real-time drone-swarm firefighting simulator & scheduler",
       description: "Built a three-subsystem simulation (Fire Incident → Scheduler → Drones) communicating over UDP, with drone state machines, fault injection/handling, and periodic event logging + post-run metrics.",
@@ -269,18 +383,28 @@ export default function App() {
       links: { code: "https://github.com/rockbjson/3005-FinalProject", demo: "https://youtu.be/Lp9sewt37s4" },
     },
     {
-      title: "'Python'",
+      title: "Python",
       subtitle: "Retro Snake Game",
       description: "Developed a classic Snake game in Python using Pygame, featuring hand-drawn pixel graphics, animated start screen, and a dynamic score system. Designed all assets (background, snake, icons, and UI) from scratch in Procreate to create a cohesive retro aesthetic.",
       tech: ["Python", "Pygame", "Procreate"],
       links: { code: "https://github.com/rockbjson/snake-game" },
+      images: [
+        "/assets/projects/python-1.png",
+        "/assets/projects/python-2.png",
+        "/assets/projects/python-3.png",
+      ]
     },
     { 
       title: "Neureset – Software Prototype", 
       subtitle: "Direct Neurofeedback EEG Device Simulator", 
       description: "Built a neurofeedback EEG device simulator with real-time brainwave tracking, electrode activity, and session logging using Mediator and Observer design patterns, featuring battery management, progress visualization, and fault handling.", 
       tech: ["Qt (QMake)", "C++"], 
-      links: { code: "https://github.com/rockbjson/3004Project", demo: "https://youtu.be/v46Up-pbSqA" } 
+      links: { code: "https://github.com/rockbjson/3004Project", demo: "https://youtu.be/v46Up-pbSqA" }, 
+      images: [
+        "/assets/projects/neureset-1.png",
+        "/assets/projects/neureset-2.png",
+        "/assets/projects/neureset-3.png",
+      ]
     },
     { 
       title: "Personal Portfolio Website", 
@@ -512,12 +636,23 @@ function Projects({ projects, onOpen }) {
             onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onOpen(p); }}
           >
             <div className="mini-bar" />
+
+            {/* NEW: project thumbnail (optional) */}
+            {p.image && (
+              <img
+                className="tile-thumb"
+                src={p.image}
+                alt={`${p.title} preview`}
+                loading="lazy"
+              />
+            )}
+
             <div className="tile-title">
               <strong>{p.title}</strong>
               <span className="tile-sub">{p.subtitle}</span>
             </div>
 
-            {/* Small, discrete arrow button (uses existing CSS .arrow-btn) */}
+            {/* Existing arrow button */}
             <button
               type="button"
               className="arrow-btn"
@@ -525,14 +660,7 @@ function Projects({ projects, onOpen }) {
               onClick={(e) => { e.stopPropagation(); onOpen(p); }}
             >
               <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M8 5l8 7-8 7"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
+                <path d="M8 5l8 7-8 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
           </article>
@@ -541,6 +669,7 @@ function Projects({ projects, onOpen }) {
     </div>
   );
 }
+
 
 function Education() {
   return (
